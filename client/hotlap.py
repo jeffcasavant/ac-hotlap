@@ -1,10 +1,13 @@
-import sys
 import os
 import platform
+import sys
 
 libdir = 'apps/python/hotlap/lib' + '64' if platform.architecture()[0] == '64bit' else ''
 sys.path.insert(0, libdir)
 os.environ['PATH'] += ';.'
+
+import json
+import urllib.request as urllib2
 
 import ac
 import acsys
@@ -28,6 +31,8 @@ TRACK_CONF  = ''
 CAR         = ''
 BEST_LOGGED_LAP = sys.maxsize
 LAP_HISTORY = []
+
+SERVER = ''
 
 ACTIVE = True
 
@@ -78,7 +83,18 @@ def acUpdate(ms):
 
         if last_lap and (not LAP_HISTORY or not last_lap == LAP_HISTORY[-1]):
             if last_lap < BEST_LOGGED_LAP and valid:
+
                 ac.console('New record: {}'.format(last_lap))
+
+                req = urllib2.Request(SERVER,
+                                      data=json.dumps({'driver': DRIVER,
+                                                       'track': TRACK,
+                                                       'track_conf': TRACK_CONF,
+                                                       'car': CAR,
+                                                       'lap': last_lap}))
+                resp = urllib2.urlopen(req)
+                ac.console(resp)
+
                 BEST_LOGGED_LAP = last_lap
             else:
                 ac.console('Last lap: {}{}'.format(last_lap, '' if valid else ' (invalid)'))
