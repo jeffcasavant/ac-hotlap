@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 conn = sqlite3.connect(DB)
 db = conn.cursor()
-db.execute('CREATE TABLE IF NOT EXISTS records (driver text, track text, car text, track_conf text, lap real)')
+db.execute('CREATE TABLE IF NOT EXISTS records (driver text, track text, car text, lap real)')
 conn.commit()
 conn.close()
 
@@ -24,8 +24,8 @@ def records():
         data = request.get_json(force=True)
         conn = sqlite3.connect(DB)
         db = conn.cursor()
-        db.execute('INSERT INTO records VALUES (?, ?, ?, ?, ?)',
-                   (data['driver'], data['track'], data['car'], data['track_conf'], data['lap']))
+        db.execute('INSERT INTO records VALUES (?, ?, ?, ?)',
+                   (data['driver'], data['track'], data['car'], data['lap']))
         conn.commit()
         conn.close()
         return 'accepted', 204
@@ -53,7 +53,7 @@ def records():
         db = conn.cursor()
         data = db.execute('SELECT * FROM records {} ORDER BY lap ASC LIMIT ?'.format(where_clause), subs)
 
-        result = json.dumps([{'driver': item[0], 'track': item[1], 'car': item[2], 'track_conf': item[3], 'lap': item[4]}
+        result = json.dumps([{'driver': item[0], 'track': item[1], 'car': item[2], 'lap': item[3]}
                 for item in data])
 
         conn.close()
