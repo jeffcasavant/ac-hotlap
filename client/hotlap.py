@@ -20,6 +20,7 @@ UPDATE_DELTA = 0
 UPDATE_THRESHOLD = 1000
 
 TIRES_THRESHOLD = 2
+CURRENT_LAP_VALID = True
 
 DRIVER      = ''
 TRACK       = ''
@@ -60,24 +61,27 @@ def acMain(ac_version):
     return NAME
 
 def acUpdate(ms):
-    global BEST_LOGGED_LAP, LAP_HISTORY, UPDATE_DELTA
-
-    UPDATE_DELTA += ms
-    if UPDATE_DELTA < UPDATE_THRESHOLD:
-        return 
-    else:
-        UPDATE_DELTA = 0
+    global BEST_LOGGED_LAP, LAP_HISTORY, UPDATE_DELTA, CURRENT_LAP_VALID
 
     if ACTIVE:
-        last_lap = ac.getCarState(DRIVER_ID_SELF, acsys.CS.LastLap)
-        valid = not ac.getCarState(DRIVER_ID_SELF, acsys.CS.LapInvalidated) #and info.physics.numberOfTyresOut <= TIRES_THRESHOLD
+        if CURRENT_LAP_VALID and info.physics.numberOfTyresOut > TIRES_THRESHOLD:
+            ac.console('current lap invalid')
+            CURRENT_LAP_VALID = False
 
-        if last_lap and not last_lap in LAP_HISTORY:
+        #UPDATE_DELTA += ms
+        #if UPDATE_DELTA < UPDATE_THRESHOLD:
+        #    return
+        #UPDATE_DELTA = 0
+
+        last_lap = ac.getCarState(DRIVER_ID_SELF, acsys.CS.LastLap)
+        valid = CURRENT_LAP_VALID and not ac.getCarState(DRIVER_ID_SELF, acsys.CS.LapInvalidated)
+
+        if last_lap and (not LAP_HISTORY or not last_lap == LAP_HISTORY[-1]):
             if last_lap < BEST_LOGGED_LAP and valid:
                 ac.console('New record: {}'.format(last_lap))
+                BEST_LOGGED_LAP = last_lap
             else:
-                ac.console('Last lap: {}{}'.format(last_lap, ' (invalid)' if invalid else ''))
+                ac.console('Last lap: {}{}'.format(last_lap, '' if valid else ' (invalid)'))
+            # reset lap tracking
+            CURRENT_LAP_VALID = True
             LAP_HISTORY.append(last_lap)
-
-def acShutdown():
-    pass
