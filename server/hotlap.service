@@ -1,0 +1,12 @@
+[Unit]
+Description=HotLap server
+Wants=network-online.target
+After=syslog.target network.target nss-lookup.target network-online.target
+
+[Service]
+ExecStart=/opt/hotlap/server/venv/bin/python /opt/hotlap/server/app.py
+User=hotlap
+Group=hotlap
+
+[Install]
+WantedBy=multi-user.target
