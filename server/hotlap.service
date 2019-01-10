@@ -5,6 +5,7 @@ After=syslog.target network.target nss-lookup.target network-online.target
 
 [Service]
 ExecStart=/opt/ac-hotlap/server/venv/bin/python /opt/ac-hotlap/server/app.py
+WorkingDirectory=/opt/ac-hotlap
 User=hotlap
 Group=hotlap
 
