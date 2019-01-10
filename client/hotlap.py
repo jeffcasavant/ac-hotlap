@@ -7,10 +7,11 @@ sys.path.insert(0, libdir)
 os.environ['PATH'] += ';.'
 
 import json
-import urllib.request as urllib2
 
 import ac
 import acsys
+
+from urllib import request
 
 from sim_info import info
 
@@ -86,13 +87,13 @@ def acUpdate(ms):
 
                 ac.console('New record: {}'.format(last_lap))
 
-                req = urllib2.Request(SERVER,
+                req = request.Request(SERVER,
                                       data=json.dumps({'driver': DRIVER,
                                                        'track': TRACK,
                                                        'track_conf': TRACK_CONF,
                                                        'car': CAR,
                                                        'lap': last_lap}))
-                resp = urllib2.urlopen(req)
+                resp = request.urlopen(req)
                 ac.console(resp)
 
                 BEST_LOGGED_LAP = last_lap
