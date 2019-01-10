@@ -8,6 +8,7 @@ ExecStart=/opt/ac-hotlap/server/venv/bin/python /opt/ac-hotlap/server/app.py
 WorkingDirectory=/opt/ac-hotlap
 User=hotlap
 Group=hotlap
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
