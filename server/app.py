@@ -32,7 +32,7 @@ def records():
     else:
         track = request.args.get('track', default=None)
         car = request.args.get('car', default=None)
-        limit = request.args.get('limit', default=10)
+        limit = int(request.args.get('limit', default=10))
 
         if limit > 100:
             limit = 100
